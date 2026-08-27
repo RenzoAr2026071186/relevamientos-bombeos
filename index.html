@@ -6,55 +6,532 @@
 <title>Relevamiento de Bombeos</title>
 
 <style>
+*{box-sizing:border-box}
+
 body{
+  margin:0;
   font-family:Arial,sans-serif;
   background:#f3f5f8;
-  padding:20px;
-  color:#172033;
+  color:#172033
 }
-.card{
-  background:white;
-  padding:20px;
-  border-radius:14px;
-  max-width:700px;
-  margin:auto;
-}
-h1{color:#0b5cff}
-button{
+
+header{
   background:#0b5cff;
   color:white;
-  border:0;
-  padding:12px 18px;
-  border-radius:8px;
-  cursor:pointer;
+  padding:16px;
+  font-size:21px;
+  font-weight:700;
+  position:sticky;
+  top:0;
+  z-index:5
 }
-#resultado{
-  margin-top:20px;
-  padding:15px;
-  background:#f1f5f9;
-  border-radius:8px;
-  white-space:pre-wrap;
+
+.wrap{
+  max-width:900px;
+  margin:auto;
+  padding:14px
+}
+
+.card{
+  background:white;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 2px 8px #0001
+}
+
+h2{
+  margin:0 0 12px;
+  font-size:20px
+}
+
+h3{
+  margin:4px 0 10px
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+
+@media(max-width:600px){
+  .row{grid-template-columns:1fr}
+}
+
+label{
+  display:block;
+  font-weight:700;
+  margin:10px 0 5px
+}
+
+input,select,textarea{
+  width:100%;
+  padding:11px;
+  border:1px solid #ccd3df;
+  border-radius:9px;
+  font-size:16px
+}
+
+textarea{
+  min-height:75px
+}
+
+button{
+  border:0;
+  border-radius:10px;
+  padding:12px 15px;
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+  margin:4px 3px 4px 0
+}
+
+.primary{
+  background:#0b5cff;
+  color:white
+}
+
+.secondary{
+  background:#e8eefc;
+  color:#0b5cff
+}
+
+.danger{
+  background:#fee2e2;
+  color:#991b1b
+}
+
+.hidden{
+  display:none
+}
+
+.muted{
+  color:#687386;
+  font-size:13px
+}
+
+.pump{
+  border:1px solid #dbe1ea;
+  border-radius:12px;
+  padding:13px;
+  margin-top:12px
+}
+
+.tabs{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-bottom:14px
+}
+
+.tab{
+  background:white;
+  border:1px solid #ccd3df
+}
+
+.tab.active{
+  background:#0b5cff;
+  color:white
+}
+
+.record{
+  border:1px solid #dbe1ea;
+  border-radius:10px;
+  padding:12px;
+  margin:8px 0
+}
+
+.badge{
+  display:inline-block;
+  background:#eef3ff;
+  color:#0b5cff;
+  padding:4px 8px;
+  border-radius:99px;
+  font-size:12px;
+  font-weight:700
+}
+
+.stat{
+  font-size:24px;
+  font-weight:800
+}
+
+.grid4{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px
+}
+
+@media(max-width:650px){
+  .grid4{grid-template-columns:1fr 1fr}
+}
+
+.status{
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
+  background:#f1f5f9
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<header>⚡ Relevamiento de Bombeos</header>
 
-<h1>⚡ Relevamiento de Bombeos</h1>
+<main class="wrap">
 
-<p>Prueba de conexión con Supabase</p>
+<!-- LOGIN -->
 
-<button onclick="probarConexion()">
-Probar conexión
+<section id="login" class="card">
+
+<h2>Iniciar sesión</h2>
+
+<p class="muted">
+Seleccioná quién carga el relevamiento.
+</p>
+
+<select id="operario">
+<option value="">Seleccionar operario...</option>
+<option>Renzo Arnaudo</option>
+<option>Ricardo Luján</option>
+</select>
+
+<button class="primary" onclick="entrar()">
+Ingresar
 </button>
 
-<div id="resultado">
-Esperando prueba...
+</section>
+
+
+<!-- APP -->
+
+<section id="app" class="hidden">
+
+<div class="card">
+
+Operario:
+<b id="usuario"></b>
+
+<button class="secondary" onclick="salir()">
+Cerrar sesión
+</button>
+
+<div id="estado" class="status">
+Conectado con Supabase
 </div>
 
 </div>
+
+
+<div class="tabs">
+
+<button class="tab active" onclick="vista('nuevo',this)">
+Nuevo bombeo
+</button>
+
+<button class="tab" onclick="vista('historial',this)">
+Historial
+</button>
+
+<button class="tab" onclick="vista('consumo',this)">
+Consumo
+</button>
+
+</div>
+
+
+<!-- NUEVO -->
+
+<section id="nuevo">
+
+
+<div class="card">
+
+<h2>🏭 Datos del bombeo</h2>
+
+<div class="row">
+
+<div>
+
+<label>Bombeo</label>
+
+<select id="nombre">
+
+<option value="">Seleccionar bombeo...</option>
+
+<option>Itatí</option>
+<option>Las 400</option>
+<option>Juncal</option>
+<option>Mazzini</option>
+<option>Neuquén</option>
+<option>San Juan</option>
+<option>Maipú</option>
+<option>San Gabriel</option>
+<option>Tokio</option>
+<option>Booster S.M.</option>
+<option>Cuesta Blanca</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>Capacidad del tanque (m³)</label>
+
+<input id="tanque" type="number" step="0.1">
+
+</div>
+
+
+<div>
+
+<label>Fecha del relevamiento</label>
+
+<input id="fecha" type="date">
+
+</div>
+
+
+<div>
+
+<label>Ubicación</label>
+
+<input id="ubicacion">
+
+</div>
+
+</div>
+
+
+<label>Observaciones</label>
+
+<textarea id="obsBombeo"></textarea>
+
+</div>
+
+
+<!-- BOMBAS -->
+
+<div class="card">
+
+<h2>🚰 Bombas</h2>
+
+<div id="bombas"></div>
+
+<button class="secondary" onclick="agregarBomba()">
+＋ Agregar otra bomba
+</button>
+
+</div>
+
+
+<!-- TABLERO -->
+
+<div class="card">
+
+<h2>⚡ Tablero y protecciones</h2>
+
+<div class="row">
+
+<div>
+
+<label>Térmica</label>
+
+<input id="termica" placeholder="Ej.: 80 A curva C">
+
+</div>
+
+<div>
+
+<label>Disyuntor diferencial</label>
+
+<input id="disyuntor" placeholder="Ej.: 80 A - 300 mA">
+
+</div>
+
+<div>
+
+<label>Guardamotor</label>
+
+<input id="guardamotor">
+
+</div>
+
+<div>
+
+<label>Contactor</label>
+
+<input id="contactor">
+
+</div>
+
+<div>
+
+<label>Variador</label>
+
+<input id="variador">
+
+</div>
+
+<div>
+
+<label>Temporizador</label>
+
+<input id="temporizador">
+
+</div>
+
+</div>
+
+
+<label>Otros componentes</label>
+
+<textarea id="otrosTablero"></textarea>
+
+</div>
+
+
+<!-- CONSUMO -->
+
+<div class="card">
+
+<h2>📈 Registro de funcionamiento</h2>
+
+<div class="row">
+
+<div>
+
+<label>Horas de bombeo diarias</label>
+
+<input id="horasDiarias"
+type="number"
+step="0.1">
+
+</div>
+
+
+<div>
+
+<label>Potencia promedio medida (kW)</label>
+
+<input id="potenciaPromedio"
+type="number"
+step="0.01">
+
+</div>
+
+
+<div>
+
+<label>Consumo diario (kWh)</label>
+
+<input id="consumoDiario"
+type="number"
+step="0.01">
+
+</div>
+
+
+<div>
+
+<label>Fecha de medición</label>
+
+<input id="fechaConsumo"
+type="date">
+
+</div>
+
+</div>
+
+
+<p class="muted">
+Si cargás horas y potencia, la app calcula automáticamente:
+kWh/día = kW × horas.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<button class="primary" onclick="guardar()">
+💾 Guardar bombeo
+</button>
+
+<button class="secondary" onclick="nuevo()">
+Limpiar
+</button>
+
+</div>
+
+</section>
+
+
+<!-- HISTORIAL -->
+
+<section id="historial" class="hidden">
+
+<div class="card">
+
+<h2>📋 Historial de bombeos</h2>
+
+<div id="listaHistorial">
+Cargando...
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CONSUMO -->
+
+<section id="consumo" class="hidden">
+
+<div class="card">
+
+<h2>📊 Consumo</h2>
+
+<div class="grid4">
+
+<div>
+<div class="stat" id="cBombeos">0</div>
+<div class="muted">Bombeos</div>
+</div>
+
+<div>
+<div class="stat" id="cRegistros">0</div>
+<div class="muted">Registros</div>
+</div>
+
+<div>
+<div class="stat" id="cPromedio">0</div>
+<div class="muted">kWh/día promedio</div>
+</div>
+
+<div>
+<div class="stat" id="cMax">0</div>
+<div class="muted">kWh/día máximo</div>
+</div>
+
+</div>
+
+<hr>
+
+<div id="detalleConsumo"></div>
+
+</div>
+
+</section>
+
+</section>
+
+</main>
+
 
 <script>
 
@@ -64,52 +541,762 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 'sb_publishable_1vPC56eOZLGxlwlYWTA9bg_arXeNv1Z';
 
-async function probarConexion(){
 
-const resultado =
-document.getElementById('resultado');
+let bombas=[];
 
-resultado.innerHTML =
-'Conectando con Supabase...';
+
+/* LOGIN */
+
+function entrar(){
+
+let op=document.getElementById('operario').value;
+
+if(!op){
+
+alert('Seleccioná un operario.');
+
+return;
+}
+
+localStorage.setItem('operario',op);
+
+document.getElementById('usuario').textContent=op;
+
+document.getElementById('login').classList.add('hidden');
+
+document.getElementById('app').classList.remove('hidden');
+
+nuevo();
+
+renderHistorial();
+
+renderConsumo();
+
+}
+
+
+/* SALIR */
+
+function salir(){
+
+localStorage.removeItem('operario');
+
+location.reload();
+
+}
+
+
+/* CAMBIO DE VISTA */
+
+function vista(id,el){
+
+['nuevo','historial','consumo'].forEach(
+x=>document.getElementById(x).classList.add('hidden')
+);
+
+document.getElementById(id).classList.remove('hidden');
+
+document.querySelectorAll('.tab')
+.forEach(x=>x.classList.remove('active'));
+
+el.classList.add('active');
+
+if(id==='historial'){
+
+renderHistorial();
+
+}
+
+if(id==='consumo'){
+
+renderConsumo();
+
+}
+
+}
+
+
+/* AGREGAR BOMBA */
+
+function agregarBomba(data={}){
+
+let i=bombas.length;
+
+bombas.push(data);
+
+let d=document.createElement('div');
+
+d.className='pump';
+
+d.innerHTML=`
+
+<h3>🚰 Bomba ${i+1}</h3>
+
+<button class="danger"
+onclick="quitarBomba(${i})">
+Quitar
+</button>
+
+<div class="row">
+
+<div>
+
+<label>Marca / modelo</label>
+
+<input data-f="marca"
+value="${esc(data.marca||'')}">
+
+</div>
+
+<div>
+
+<label>Potencia (HP/kW)</label>
+
+<input data-f="potencia"
+value="${esc(data.potencia||'')}">
+
+</div>
+
+<div>
+
+<label>Corriente (A)</label>
+
+<input data-f="corriente"
+value="${esc(data.corriente||'')}">
+
+</div>
+
+<div>
+
+<label>Altura de bombeo (m)</label>
+
+<input data-f="altura"
+value="${esc(data.altura||'')}">
+
+</div>
+
+<div>
+
+<label>Caudal</label>
+
+<input data-f="caudal"
+placeholder="m³/h o L/min"
+value="${esc(data.caudal||'')}">
+
+</div>
+
+<div>
+
+<label>Horas de bombeo/día</label>
+
+<input data-f="horas"
+type="number"
+step="0.1"
+value="${esc(data.horas||'')}">
+
+</div>
+
+<div>
+
+<label>Rodamientos</label>
+
+<input data-f="rodamientos"
+value="${esc(data.rodamientos||'')}">
+
+</div>
+
+<div>
+
+<label>Último cambio de rodamientos</label>
+
+<input data-f="fechaRod"
+type="date"
+value="${esc(data.fechaRod||'')}">
+
+</div>
+
+<div>
+
+<label>Diámetro impulsión</label>
+
+<input data-f="impulsion"
+placeholder="mm / pulgadas"
+value="${esc(data.impulsion||'')}">
+
+</div>
+
+<div>
+
+<label>Diámetro succión</label>
+
+<input data-f="succion"
+placeholder="mm / pulgadas"
+value="${esc(data.succion||'')}">
+
+</div>
+
+</div>
+
+<label>Observaciones</label>
+
+<textarea data-f="obs">${esc(data.obs||'')}</textarea>
+
+`;
+
+document.getElementById('bombas').appendChild(d);
+
+}
+
+
+/* QUITAR BOMBA */
+
+function quitarBomba(i){
+
+if(bombas.length===1){
+
+alert('Debe quedar al menos una bomba.');
+
+return;
+
+}
+
+bombas.splice(i,1);
+
+renderBombas();
+
+}
+
+
+/* RENDER BOMBAS */
+
+function renderBombas(){
+
+let old=[...bombas];
+
+document.getElementById('bombas').innerHTML='';
+
+bombas=[];
+
+old.forEach(x=>agregarBomba(x));
+
+}
+
+
+/* RECOGER BOMBAS */
+
+function recogerBombas(){
+
+let out=[];
+
+document.querySelectorAll('.pump')
+.forEach((p,i)=>{
+
+let x={};
+
+p.querySelectorAll('[data-f]')
+.forEach(e=>{
+
+x[e.dataset.f]=e.value;
+
+});
+
+out.push(x);
+
+});
+
+return out;
+
+}
+
+
+/* ESCAPE */
+
+function esc(v=''){
+
+return String(v)
+.replace(/[&<>"']/g,m=>({
+
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#039;'
+
+}[m]));
+
+}
+
+
+/* GUARDAR BOMBEOS */
+
+async function guardar(){
+
+let nombre=
+document.getElementById('nombre').value;
+
+if(!nombre){
+
+alert('Seleccioná un bombeo.');
+
+return;
+
+}
+
+
+let horas=
+Number(document.getElementById('horasDiarias').value||0);
+
+let potencia=
+Number(document.getElementById('potenciaPromedio').value||0);
+
+let consumo=
+Number(document.getElementById('consumoDiario').value||0);
+
+
+if(!consumo && horas && potencia){
+
+consumo=horas*potencia;
+
+document.getElementById('consumoDiario').value=
+consumo.toFixed(2);
+
+}
+
+
+let datos={
+
+nombre:nombre,
+
+tanque:Number(
+document.getElementById('tanque').value||0
+),
+
+fecha:document.getElementById('fecha').value,
+
+ubicacion:
+document.getElementById('ubicacion').value,
+
+observaciones:
+document.getElementById('obsBombeo').value,
+
+operario:
+document.getElementById('usuario').textContent
+
+};
+
 
 try{
 
-const respuesta = await fetch(
-SUPABASE_URL + '/rest/v1/bombeos?select=*',
+document.getElementById('estado').textContent=
+'Guardando bombeo...';
+
+
+/* BOMBEOS */
+
+const r=await fetch(
+SUPABASE_URL+'/rest/v1/bombeos',
 {
-method:'GET',
+
+method:'POST',
+
+headers:{
+'apikey':SUPABASE_KEY,
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':'application/json',
+'Prefer':'return=representation'
+},
+
+body:JSON.stringify(datos)
+
+});
+
+
+if(!r.ok){
+
+throw new Error(
+'Error guardando bombeo: HTTP '+r.status
+);
+
+}
+
+
+const bombeo=await r.json();
+
+const bombeoId=bombeo[0].id;
+
+
+/* BOMBAS */
+
+const listaBombas=recogerBombas();
+
+for(const b of listaBombas){
+
+await fetch(
+SUPABASE_URL+'/rest/v1/bombas',
+{
+
+method:'POST',
+
+headers:{
+'apikey':SUPABASE_KEY,
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+
+bombeo_id:bombeoId,
+
+marca:b.marca||null,
+
+potencia:b.potencia||null,
+
+corriente:b.corriente||null,
+
+altura:b.altura||null,
+
+caudal:b.caudal||null,
+
+horas:b.horas||null,
+
+rodamientos:b.rodamientos||null,
+
+fecha_rodamientos:b.fechaRod||null,
+
+diametro_impulsion:b.impulsion||null,
+
+diametro_succion:b.succion||null,
+
+observaciones:b.obs||null
+
+})
+
+}
+
+);
+
+}
+
+
+/* TABLERO */
+
+await fetch(
+SUPABASE_URL+'/rest/v1/tableros',
+{
+
+method:'POST',
+
+headers:{
+'apikey':SUPABASE_KEY,
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+
+bombeo_id:bombeoId,
+
+termica:document.getElementById('termica').value,
+
+disyuntor:document.getElementById('disyuntor').value,
+
+guardamotor:document.getElementById('guardamotor').value,
+
+contactor:document.getElementById('contactor').value,
+
+variador:document.getElementById('variador').value,
+
+temporizador:document.getElementById('temporizador').value,
+
+otros:document.getElementById('otrosTablero').value
+
+})
+
+});
+
+
+/* CONSUMO */
+
+await fetch(
+SUPABASE_URL+'/rest/v1/consumos',
+{
+
+method:'POST',
+
+headers:{
+'apikey':SUPABASE_KEY,
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+
+bombeo_id:bombeoId,
+
+horas:horas,
+
+potencia:potencia,
+
+kwh:consumo,
+
+fecha:document.getElementById('fechaConsumo').value
+
+})
+
+});
+
+
+alert('✅ Bombeo guardado correctamente.');
+
+document.getElementById('estado').textContent=
+'Conectado con Supabase';
+
+renderHistorial();
+
+renderConsumo();
+
+nuevo();
+
+}
+
+catch(error){
+
+console.error(error);
+
+document.getElementById('estado').textContent=
+'Error de conexión';
+
+alert('❌ '+error.message);
+
+}
+
+}
+
+
+/* HISTORIAL */
+
+async function renderHistorial(){
+
+let cont=
+document.getElementById('listaHistorial');
+
+cont.innerHTML='Cargando...';
+
+
+try{
+
+const r=await fetch(
+SUPABASE_URL+
+'/rest/v1/bombeos?select=*&order=id.desc',
+{
+
 headers:{
 'apikey':SUPABASE_KEY,
 'Authorization':'Bearer '+SUPABASE_KEY
 }
-}
-);
 
-if(!respuesta.ok){
-throw new Error(
-'Error HTTP: '+respuesta.status
-);
-}
+});
 
-const datos = await respuesta.json();
+if(!r.ok)throw new Error('HTTP '+r.status);
 
-resultado.innerHTML =
-'✅ CONEXIÓN CORRECTA\n\n' +
-'Bombeos encontrados: ' +
-datos.length +
-'\n\n' +
-JSON.stringify(datos,null,2);
+const datos=await r.json();
 
-}
-catch(error){
 
-resultado.innerHTML =
-'❌ ERROR DE CONEXIÓN\n\n' +
-error.message;
+if(!datos.length){
+
+cont.innerHTML='No hay bombeos guardados.';
+
+return;
 
 }
 
+
+cont.innerHTML=datos.map(x=>`
+
+<div class="record">
+
+<span class="badge">
+${esc(x.fecha||'')}
+</span>
+
+<b>${esc(x.nombre||'')}</b>
+
+<br>
+
+<span class="muted">
+
+${esc(x.ubicacion||'')}
+· tanque ${Number(x.tanque||0)} m³
+· cargó ${esc(x.operario||'')}
+
+</span>
+
+</div>
+
+`).join('');
+
 }
+
+catch(e){
+
+cont.innerHTML=
+'❌ Error cargando historial: '+e.message;
+
+}
+
+}
+
+
+/* CONSUMO */
+
+async function renderConsumo(){
+
+try{
+
+const r=await fetch(
+SUPABASE_URL+
+'/rest/v1/consumos?select=*',
+{
+
+headers:{
+'apikey':SUPABASE_KEY,
+'Authorization':'Bearer '+SUPABASE_KEY
+}
+
+});
+
+if(!r.ok)throw new Error('HTTP '+r.status);
+
+const datos=await r.json();
+
+let valores=
+datos
+.map(x=>Number(x.kwh||0))
+.filter(x=>x>0);
+
+let promedio=
+valores.length
+?
+valores.reduce((a,b)=>a+b,0)/valores.length
+:
+0;
+
+let max=
+valores.length
+?
+Math.max(...valores)
+:
+0;
+
+document.getElementById('cBombeos').textContent=
+new Set(datos.map(x=>x.bombeo_id)).size;
+
+document.getElementById('cRegistros').textContent=
+datos.length;
+
+document.getElementById('cPromedio').textContent=
+promedio.toFixed(2);
+
+document.getElementById('cMax').textContent=
+max.toFixed(2);
+
+
+document.getElementById('detalleConsumo').innerHTML=
+datos.length
+?
+datos.map(x=>`
+
+<div class="record">
+
+Bombeo ID: ${x.bombeo_id}
+
+<br>
+
+${esc(x.fecha||'')}
+
+— ${Number(x.kwh||0).toFixed(2)} kWh/día
+
+— ${Number(x.horas||0)} h/día
+
+— ${Number(x.potencia||0)} kW
+
+</div>
+
+`).join('')
+:
+'Sin datos de consumo.';
+
+}
+
+catch(e){
+
+console.error(e);
+
+}
+
+}
+
+
+/* LIMPIAR */
+
+function nuevo(){
+
+document.getElementById('nombre').value='';
+
+document.getElementById('tanque').value='';
+
+document.getElementById('ubicacion').value='';
+
+document.getElementById('obsBombeo').value='';
+
+document.getElementById('termica').value='';
+
+document.getElementById('disyuntor').value='';
+
+document.getElementById('guardamotor').value='';
+
+document.getElementById('contactor').value='';
+
+document.getElementById('variador').value='';
+
+document.getElementById('temporizador').value='';
+
+document.getElementById('otrosTablero').value='';
+
+document.getElementById('horasDiarias').value='';
+
+document.getElementById('potenciaPromedio').value='';
+
+document.getElementById('consumoDiario').value='';
+
+document.getElementById('fecha').valueAsDate=new Date();
+
+document.getElementById('fechaConsumo').valueAsDate=new Date();
+
+document.getElementById('bombas').innerHTML='';
+
+bombas=[];
+
+agregarBomba();
+
+}
+
+
+/* INICIO */
+
+window.onload=()=>{
+
+let op=localStorage.getItem('operario');
+
+if(op){
+
+document.getElementById('operario').value=op;
+
+entrar();
+
+}
+
+};
 
 </script>
 
