@@ -4,43 +4,80 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Relevamiento de Bombeos</title>
+
 <style>
-body{font-family:Arial,sans-serif;background:#f3f5f8;padding:20px;color:#172033}
-.card{background:white;padding:20px;border-radius:14px;max-width:700px;margin:auto}
+body{
+  font-family:Arial,sans-serif;
+  background:#f3f5f8;
+  padding:20px;
+  color:#172033;
+}
+.card{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  max-width:700px;
+  margin:auto;
+}
 h1{color:#0b5cff}
-button{background:#0b5cff;color:white;border:0;padding:12px 18px;border-radius:8px;cursor:pointer}
-#resultado{margin-top:20px;padding:15px;background:#f1f5f9;border-radius:8px}
+button{
+  background:#0b5cff;
+  color:white;
+  border:0;
+  padding:12px 18px;
+  border-radius:8px;
+  cursor:pointer;
+}
+#resultado{
+  margin-top:20px;
+  padding:15px;
+  background:#f1f5f9;
+  border-radius:8px;
+  white-space:pre-wrap;
+}
 </style>
 </head>
 
 <body>
 
 <div class="card">
+
 <h1>⚡ Relevamiento de Bombeos</h1>
 
 <p>Prueba de conexión con Supabase</p>
 
-<button onclick="probarConexion()">Probar conexión</button>
+<button onclick="probarConexion()">
+Probar conexión
+</button>
 
-<div id="resultado">Esperando prueba...</div>
+<div id="resultado">
+Esperando prueba...
+</div>
+
 </div>
 
 <script>
-const SUPABASE_URL = 'https://fkhtiupuirfkgjdvpsee.supabase.co';
 
-const SUPABASE_KEY = 'sb_publishable_1vPC56eOZLGxlwlYWTA9bg_arXeNv1Z';
+const SUPABASE_URL =
+'https://fkhtiupuirfkgjdvpsee.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_1vPC56eOZLGxlwlYWTA9bg_arXeNv1Z';
 
 async function probarConexion(){
 
-const resultado = document.getElementById('resultado');
+const resultado =
+document.getElementById('resultado');
 
-resultado.innerHTML = 'Conectando...';
+resultado.innerHTML =
+'Conectando con Supabase...';
 
 try{
 
 const respuesta = await fetch(
 SUPABASE_URL + '/rest/v1/bombeos?select=*',
 {
+method:'GET',
 headers:{
 'apikey':SUPABASE_KEY,
 'Authorization':'Bearer '+SUPABASE_KEY
@@ -49,26 +86,31 @@ headers:{
 );
 
 if(!respuesta.ok){
-throw new Error('HTTP '+respuesta.status);
+throw new Error(
+'Error HTTP: '+respuesta.status
+);
 }
 
 const datos = await respuesta.json();
 
 resultado.innerHTML =
-'<b>✅ Conexión correcta</b><br><br>' +
-'Bombeos encontrados: ' + datos.length +
-'<br><br>' +
+'✅ CONEXIÓN CORRECTA\n\n' +
+'Bombeos encontrados: ' +
+datos.length +
+'\n\n' +
 JSON.stringify(datos,null,2);
 
-}catch(error){
+}
+catch(error){
 
 resultado.innerHTML =
-'<b>❌ Error de conexión</b><br><br>' +
+'❌ ERROR DE CONEXIÓN\n\n' +
 error.message;
 
 }
 
 }
+
 </script>
 
 </body>
