@@ -1,0 +1,115 @@
+name: Fix historial
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reparar historial
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          new_fn = r'''async function renderHistorial(){
+
+const cont=document.getElementById('listaHistorial');
+if(!cont) return;
+cont.innerHTML='<div class="status">Cargando historial...</div>';
+
+try{
+  const r=await fetch(
+    SUPABASE_URL+'/rest/v1/bombeos?select=id,nombre,fecha,ubicacion,tanque,operario&order=id.desc',
+    {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Accept':'application/json'}}
+  );
+
+  let datos=[];
+  if(r.ok){
+    const json=await r.json();
+    if(Array.isArray(json)) datos=json;
+  }
+
+  /* Si Supabase no permite SELECT, mostramos igualmente los relevamientos
+     guardados en este navegador. */
+  if(!datos.length){
+    const locales=[];
+    for(let i=0;i<localStorage.length;i++){
+      const k=localStorage.key(i);
+      if(k && k.indexOf('historial_bombeo_')===0){
+        try{ locales.push(JSON.parse(localStorage.getItem(k))); }catch(_e){}
+      }
+    }
+    datos=locales.sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||'')));
+  }
+
+  if(!datos.length){
+    cont.innerHTML='<div class="status">No hay bombeos guardados.</div>';
+    return;
+  }
+
+  cont.innerHTML=datos.map(x=>`\
+<div class="record">\
+  <span class="badge">${esc(x.fecha||'Sin fecha')}</span>\
+  <b>${esc(x.nombre||'Sin nombre')}</b><br>\
+  <span class="muted">${esc(x.ubicacion||'')} · tanque ${Number(x.tanque||0)} m³ · cargó ${esc(x.operario||'')}</span>\
+</div>`).join('');
+
+}catch(e){
+  console.error(e);
+  cont.innerHTML='<div class="status">No se pudo consultar el servidor. Mostrando los datos guardados en este dispositivo.</div>';
+  const locales=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k && k.indexOf('historial_bombeo_')===0){
+      try{ locales.push(JSON.parse(localStorage.getItem(k))); }catch(_e){}
+    }
+  }
+  if(locales.length){
+    locales.sort((a,b)=>String(b.fecha||'').localeCompare(String(a.fecha||'')));
+    cont.innerHTML+=locales.map(x=>`\
+<div class="record">\
+  <span class="badge">${esc(x.fecha||'Sin fecha')}</span>\
+  <b>${esc(x.nombre||'Sin nombre')}</b><br>\
+  <span class="muted">${esc(x.ubicacion||'')} · tanque ${Number(x.tanque||0)} m³ · cargó ${esc(x.operario||'')}</span>\
+</div>`).join('');
+  }
+}
+}
+
+'''
+
+          pattern = r'async function renderHistorial\(\)\{.*?\n\}\n\n\n/\* CONSUMO \*/'
+          replacement = new_fn + '/* CONSUMO */'
+          s2, n = re.subn(pattern, replacement, s, count=1, flags=re.S)
+          if n != 1:
+              raise SystemExit('No se encontró renderHistorial')
+
+          marker = "renderHistorial();\n\nrenderConsumo();\n\nnuevo();"
+          insert = "localStorage.setItem('historial_bombeo_'+bombeoId, JSON.stringify({id:bombeoId,nombre:datos.nombre,fecha:datos.fecha,ubicacion:datos.ubicacion,tanque:datos.tanque,operario:datos.operario}));\n\nrenderHistorial();\n\nrenderConsumo();\n\nnuevo();"
+          if marker in s2 and "historial_bombeo_'+bombeoId" not in s2:
+              s2=s2.replace(marker, insert, 1)
+
+          p.write_text(s2, encoding='utf-8')
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Sin cambios"
+          else
+            git commit -m "Reparar historial y respaldo local"
+            git push
+          fi
