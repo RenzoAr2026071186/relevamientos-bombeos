@@ -175,93 +175,66 @@ button{
   background:#f1f5f9
 }
 
-/* FOTOS */
-
-.photo-grid{
+.fotos-preview{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:10px;
+  gap:8px;
   margin-top:12px
 }
 
 @media(max-width:600px){
-  .photo-grid{
+  .fotos-preview{
     grid-template-columns:repeat(2,1fr)
   }
 }
 
-.photo-card{
+.foto{
   position:relative;
   border-radius:10px;
   overflow:hidden;
   border:1px solid #dbe1ea;
-  background:#f8fafc
+  background:#eee
 }
 
-.photo-card img{
+.foto img{
   width:100%;
   height:150px;
   object-fit:cover;
-  display:block;
-  cursor:pointer
+  display:block
 }
 
-.photo-delete{
+.foto button{
   position:absolute;
-  right:5px;
   top:5px;
+  right:5px;
+  margin:0;
+  padding:6px 9px;
   background:#991b1b;
-  color:white;
-  padding:7px 9px;
-  border-radius:8px;
-  margin:0
+  color:white
 }
 
-.photo-input{
-  display:none
+.historial-fotos{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  margin-top:10px
 }
 
-.photo-actions{
+@media(max-width:600px){
+  .historial-fotos{
+    grid-template-columns:repeat(2,1fr)
+  }
+}
+
+.historial-fotos img{
+  width:100%;
+  height:110px;
+  object-fit:cover;
+  border-radius:8px
+}
+
+.foto-input{
   margin-top:8px
-}
-
-.photo-preview{
-  margin-top:10px;
-}
-
-.photo-preview img{
-  max-width:100%;
-  max-height:250px;
-  border-radius:10px;
-}
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:#000b;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:100;
-  padding:20px
-}
-
-.modal.hidden{
-  display:none
-}
-
-.modal img{
-  max-width:95vw;
-  max-height:90vh;
-  border-radius:10px
-}
-
-.modal button{
-  position:absolute;
-  top:15px;
-  right:15px;
-  background:white;
-  color:#111
 }
 </style>
 </head>
@@ -399,6 +372,31 @@ Consumo
 </div>
 
 
+<!-- FOTOS -->
+
+<div class="card">
+
+<h2>📸 Fotos del bombeo</h2>
+
+<p class="muted">
+Podés sacar fotos directamente con el celular o seleccionarlas desde la galería.
+</p>
+
+<input
+  id="fotos"
+  class="foto-input"
+  type="file"
+  accept="image/*"
+  capture="environment"
+  multiple
+  onchange="previsualizarFotos()"
+>
+
+<div id="fotosPreview" class="fotos-preview"></div>
+
+</div>
+
+
 <!-- BOMBAS -->
 
 <div class="card">
@@ -423,33 +421,51 @@ Consumo
 <div class="row">
 
 <div>
+
 <label>Térmica</label>
+
 <input id="termica" placeholder="Ej.: 80 A curva C">
+
 </div>
 
 <div>
+
 <label>Disyuntor diferencial</label>
+
 <input id="disyuntor" placeholder="Ej.: 80 A - 300 mA">
+
 </div>
 
 <div>
+
 <label>Guardamotor</label>
+
 <input id="guardamotor">
+
 </div>
 
 <div>
+
 <label>Contactor</label>
+
 <input id="contactor">
+
 </div>
 
 <div>
+
 <label>Variador</label>
+
 <input id="variador">
+
 </div>
 
 <div>
+
 <label>Temporizador</label>
+
 <input id="temporizador">
+
 </div>
 
 </div>
@@ -473,9 +489,7 @@ Consumo
 
 <label>Horas de bombeo diarias</label>
 
-<input id="horasDiarias"
-type="number"
-step="0.1">
+<input id="horasDiarias" type="number" step="0.1">
 
 </div>
 
@@ -483,9 +497,7 @@ step="0.1">
 
 <label>Potencia promedio medida (kW)</label>
 
-<input id="potenciaPromedio"
-type="number"
-step="0.01">
+<input id="potenciaPromedio" type="number" step="0.01">
 
 </div>
 
@@ -493,9 +505,7 @@ step="0.01">
 
 <label>Consumo diario (kWh)</label>
 
-<input id="consumoDiario"
-type="number"
-step="0.01">
+<input id="consumoDiario" type="number" step="0.01">
 
 </div>
 
@@ -503,8 +513,7 @@ step="0.01">
 
 <label>Fecha de medición</label>
 
-<input id="fechaConsumo"
-type="date">
+<input id="fechaConsumo" type="date">
 
 </div>
 
@@ -514,36 +523,6 @@ type="date">
 Si cargás horas y potencia, la app calcula automáticamente:
 kWh/día = kW × horas.
 </p>
-
-</div>
-
-
-<!-- FOTOS -->
-
-<div class="card">
-
-<h2>📷 Fotos del relevamiento</h2>
-
-<p class="muted">
-Podés sacar fotos con la cámara o seleccionarlas desde la galería.
-</p>
-
-<input
-id="inputFotos"
-class="photo-input"
-type="file"
-accept="image/*"
-multiple
-capture="environment"
-onchange="prepararFotos()">
-
-<button
-class="primary"
-onclick="document.getElementById('inputFotos').click()">
-📷 Agregar fotos
-</button>
-
-<div id="fotosNuevas" class="photo-grid"></div>
 
 </div>
 
@@ -625,19 +604,6 @@ Cargando...
 </main>
 
 
-<!-- MODAL FOTO -->
-
-<div id="modalFoto" class="modal hidden" onclick="cerrarFoto()">
-
-<button onclick="cerrarFoto();event.stopPropagation()">
-✕ Cerrar
-</button>
-
-<img id="fotoGrande" src="" onclick="event.stopPropagation()">
-
-</div>
-
-
 <script>
 
 const SUPABASE_URL =
@@ -646,11 +612,10 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 'sb_publishable_1vPC56eOZLGxlwlYWTA9bg_arXeNv1Z';
 
-const BUCKET =
-'fotos-bombeos';
+const STORAGE_BUCKET = 'fotos';
 
 let bombas=[];
-let fotosNuevas=[];
+let fotosSeleccionadas=[];
 
 
 /* LOGIN */
@@ -664,6 +629,7 @@ if(!op){
 alert('Seleccioná un operario.');
 
 return;
+
 }
 
 localStorage.setItem('operario',op);
@@ -709,9 +675,13 @@ document.querySelectorAll('.tab')
 
 el.classList.add('active');
 
-if(id==='historial') renderHistorial();
+if(id==='historial'){
+renderHistorial();
+}
 
-if(id==='consumo') renderConsumo();
+if(id==='consumo'){
+renderConsumo();
+}
 
 }
 
@@ -761,32 +731,44 @@ Quitar
 
 <div>
 <label>Caudal</label>
-<input data-f="caudal" placeholder="m³/h o L/min" value="${esc(data.caudal||'')}">
+<input data-f="caudal"
+placeholder="m³/h o L/min"
+value="${esc(data.caudal||'')}">
 </div>
 
 <div>
 <label>Horas de bombeo/día</label>
-<input data-f="horas" type="number" step="0.1" value="${esc(data.horas||'')}">
+<input data-f="horas"
+type="number"
+step="0.1"
+value="${esc(data.horas||'')}">
 </div>
 
 <div>
 <label>Rodamientos</label>
-<input data-f="rodamientos" value="${esc(data.rodamientos||'')}">
+<input data-f="rodamientos"
+value="${esc(data.rodamientos||'')}">
 </div>
 
 <div>
 <label>Último cambio de rodamientos</label>
-<input data-f="fechaRod" type="date" value="${esc(data.fechaRod||'')}">
+<input data-f="fechaRod"
+type="date"
+value="${esc(data.fechaRod||'')}">
 </div>
 
 <div>
 <label>Diámetro impulsión</label>
-<input data-f="impulsion" placeholder="mm / pulgadas" value="${esc(data.impulsion||'')}">
+<input data-f="impulsion"
+placeholder="mm / pulgadas"
+value="${esc(data.impulsion||'')}">
 </div>
 
 <div>
 <label>Diámetro succión</label>
-<input data-f="succion" placeholder="mm / pulgadas" value="${esc(data.succion||'')}">
+<input data-f="succion"
+placeholder="mm / pulgadas"
+value="${esc(data.succion||'')}">
 </div>
 
 </div>
@@ -794,6 +776,7 @@ Quitar
 <label>Observaciones</label>
 
 <textarea data-f="obs">${esc(data.obs||'')}</textarea>
+
 `;
 
 document.getElementById('bombas').appendChild(d);
@@ -842,15 +825,13 @@ function recogerBombas(){
 let out=[];
 
 document.querySelectorAll('.pump')
-.forEach(p=>{
+.forEach((p)=>{
 
 let x={};
 
 p.querySelectorAll('[data-f]')
 .forEach(e=>{
-
 x[e.dataset.f]=e.value;
-
 });
 
 out.push(x);
@@ -868,119 +849,117 @@ function esc(v=''){
 
 return String(v)
 .replace(/[&<>"']/g,m=>({
-
 '&':'&amp;',
 '<':'&lt;',
 '>':'&gt;',
 '"':'&quot;',
 "'":'&#039;'
-
 }[m]));
 
 }
 
 
-/* ========================= */
 /* FOTOS */
-/* ========================= */
 
-function prepararFotos(){
+function previsualizarFotos(){
 
-const input=document.getElementById('inputFotos');
+const input=document.getElementById('fotos');
 
-const archivos=[...input.files];
+fotosSeleccionadas=Array.from(input.files);
 
-archivos.forEach(file=>{
-
-fotosNuevas.push(file);
-
-});
-
-mostrarFotosNuevas();
-
-input.value='';
-
-}
-
-
-function mostrarFotosNuevas(){
-
-const cont=document.getElementById('fotosNuevas');
+const cont=document.getElementById('fotosPreview');
 
 cont.innerHTML='';
 
-fotosNuevas.forEach((file,i)=>{
+fotosSeleccionadas.forEach((file,index)=>{
+
+const reader=new FileReader();
+
+reader.onload=e=>{
 
 const div=document.createElement('div');
 
-div.className='photo-card';
+div.className='foto';
 
-const img=document.createElement('img');
+div.innerHTML=`
 
-img.src=URL.createObjectURL(file);
+<img src="${e.target.result}">
 
-img.onclick=()=>abrirFoto(img.src);
+<button onclick="quitarFoto(${index})">
+✕
+</button>
 
-const btn=document.createElement('button');
+`;
 
-btn.className='photo-delete';
-
-btn.textContent='✕';
-
-btn.onclick=()=>{
-
-fotosNuevas.splice(i,1);
-
-mostrarFotosNuevas();
+cont.appendChild(div);
 
 };
 
-div.appendChild(img);
-
-div.appendChild(btn);
-
-cont.appendChild(div);
+reader.readAsDataURL(file);
 
 });
 
 }
 
 
-/* SUBIR FOTO */
+/* QUITAR FOTO */
 
-async function subirFoto(file,bombeoId){
+function quitarFoto(index){
+
+fotosSeleccionadas.splice(index,1);
+
+const input=document.getElementById('fotos');
+
+const dt=new DataTransfer();
+
+fotosSeleccionadas.forEach(file=>dt.items.add(file));
+
+input.files=dt.files;
+
+previsualizarFotos();
+
+}
+
+
+/* SUBIR FOTOS */
+
+async function subirFotos(bombeoId){
+
+if(!fotosSeleccionadas.length){
+return [];
+}
+
+let urls=[];
+
+for(let i=0;i<fotosSeleccionadas.length;i++){
+
+const file=fotosSeleccionadas[i];
 
 const extension=
-(file.name.split('.').pop()||'jpg').toLowerCase();
+file.name.split('.').pop().toLowerCase() || 'jpg';
 
-const nombre=
-Date.now()+'_'+Math.random()
-.toString(36).substring(2,8)+'.'+extension;
+const nombreArchivo=
+bombeoId+'/'+Date.now()+'_'+i+'.'+extension;
 
-const path=
-bombeoId+'/'+nombre;
 
+/* SUBIR AL STORAGE */
 
 const upload=await fetch(
 
 SUPABASE_URL+
 '/storage/v1/object/'+
-BUCKET+'/'+path,
+STORAGE_BUCKET+'/'+
+nombreArchivo,
 
 {
 
 method:'POST',
 
 headers:{
-
 'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY,
-
-'Content-Type':
-file.type||'image/jpeg'
-
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':file.type || 'image/jpeg',
+'x-upsert':'false'
 },
 
 body:file
@@ -989,51 +968,54 @@ body:file
 
 );
 
-
 if(!upload.ok){
 
-const txt=await upload.text();
+const texto=await upload.text();
 
 throw new Error(
-'Error subiendo foto: '+txt
+'Error subiendo foto: '+texto
 );
 
 }
 
 
+/* URL PUBLICA */
+
 const url=
 SUPABASE_URL+
 '/storage/v1/object/public/'+
-BUCKET+'/'+path;
+STORAGE_BUCKET+'/'+
+nombreArchivo;
 
+urls.push({
+
+archivo:nombreArchivo,
+url:url
+
+});
+
+
+/* GUARDAR REGISTRO */
 
 const registro=await fetch(
 
 SUPABASE_URL+
-'/rest/v1/fotos',
+'/rest/v1/fotos_bombeos',
 
 {
 
 method:'POST',
 
 headers:{
-
 'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY,
-
-'Content-Type':
-'application/json'
-
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':'application/json'
 },
 
 body:JSON.stringify({
 
 bombeo_id:bombeoId,
-
-nombre:file.name,
-
+archivo:nombreArchivo,
 url:url
 
 })
@@ -1042,14 +1024,19 @@ url:url
 
 );
 
-
 if(!registro.ok){
 
+const texto=await registro.text();
+
 throw new Error(
-'Foto subida pero no se pudo registrar.'
+'La foto se subió pero no se pudo guardar su registro: '+texto
 );
 
 }
+
+}
+
+return urls;
 
 }
 
@@ -1069,20 +1056,16 @@ return;
 
 }
 
+
 let horas=
-Number(
-document.getElementById('horasDiarias').value||0
-);
+Number(document.getElementById('horasDiarias').value||0);
 
 let potencia=
-Number(
-document.getElementById('potenciaPromedio').value||0
-);
+Number(document.getElementById('potenciaPromedio').value||0);
 
 let consumo=
-Number(
-document.getElementById('consumoDiario').value||0
-);
+Number(document.getElementById('consumoDiario').value||0);
+
 
 if(!consumo && horas && potencia){
 
@@ -1093,6 +1076,7 @@ consumo.toFixed(2);
 
 }
 
+
 let datos={
 
 nombre:nombre,
@@ -1101,8 +1085,7 @@ tanque:Number(
 document.getElementById('tanque').value||0
 ),
 
-fecha:
-document.getElementById('fecha').value,
+fecha:document.getElementById('fecha').value,
 
 ubicacion:
 document.getElementById('ubicacion').value,
@@ -1114,6 +1097,7 @@ operario:
 document.getElementById('usuario').textContent
 
 };
+
 
 try{
 
@@ -1133,18 +1117,10 @@ SUPABASE_URL+
 method:'POST',
 
 headers:{
-
 'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY,
-
-'Content-Type':
-'application/json',
-
-'Prefer':
-'return=representation'
-
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':'application/json',
+'Prefer':'return=representation'
 },
 
 body:JSON.stringify(datos)
@@ -1156,8 +1132,11 @@ body:JSON.stringify(datos)
 
 if(!r.ok){
 
+const texto=await r.text();
+
 throw new Error(
-'Error guardando bombeo: HTTP '+r.status
+'Error guardando bombeo: HTTP '+r.status+
+' '+texto
 );
 
 }
@@ -1170,8 +1149,7 @@ const bombeoId=bombeo[0].id;
 
 /* BOMBAS */
 
-const listaBombas=
-recogerBombas();
+const listaBombas=recogerBombas();
 
 for(const b of listaBombas){
 
@@ -1185,15 +1163,9 @@ SUPABASE_URL+
 method:'POST',
 
 headers:{
-
 'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY,
-
-'Content-Type':
-'application/json'
-
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':'application/json'
 },
 
 body:JSON.stringify({
@@ -1212,20 +1184,15 @@ caudal:b.caudal||null,
 
 horas:b.horas||null,
 
-rodamientos:
-b.rodamientos||null,
+rodamientos:b.rodamientos||null,
 
-fecha_rodamientos:
-b.fechaRod||null,
+fecha_rodamientos:b.fechaRod||null,
 
-diametro_impulsion:
-b.impulsion||null,
+diametro_impulsion:b.impulsion||null,
 
-diametro_succion:
-b.succion||null,
+diametro_succion:b.succion||null,
 
-observaciones:
-b.obs||null
+observaciones:b.obs||null
 
 })
 
@@ -1236,7 +1203,7 @@ b.obs||null
 if(!rb.ok){
 
 throw new Error(
-'Error guardando una bomba.'
+'Error guardando una bomba: HTTP '+rb.status
 );
 
 }
@@ -1256,15 +1223,9 @@ SUPABASE_URL+
 method:'POST',
 
 headers:{
-
 'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY,
-
-'Content-Type':
-'application/json'
-
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':'application/json'
 },
 
 body:JSON.stringify({
@@ -1301,7 +1262,7 @@ document.getElementById('otrosTablero').value
 if(!rt.ok){
 
 throw new Error(
-'Error guardando tablero.'
+'Error guardando tablero: HTTP '+rt.status
 );
 
 }
@@ -1319,15 +1280,9 @@ SUPABASE_URL+
 method:'POST',
 
 headers:{
-
 'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY,
-
-'Content-Type':
-'application/json'
-
+'Authorization':'Bearer '+SUPABASE_KEY,
+'Content-Type':'application/json'
 },
 
 body:JSON.stringify({
@@ -1352,7 +1307,7 @@ document.getElementById('fechaConsumo').value
 if(!rc.ok){
 
 throw new Error(
-'Error guardando consumo.'
+'Error guardando consumo: HTTP '+rc.status
 );
 
 }
@@ -1360,26 +1315,26 @@ throw new Error(
 
 /* FOTOS */
 
-if(fotosNuevas.length){
+if(fotosSeleccionadas.length){
 
 document.getElementById('estado').textContent=
 'Subiendo fotos...';
 
-for(const foto of fotosNuevas){
-
-await subirFoto(foto,bombeoId);
-
-}
+await subirFotos(bombeoId);
 
 }
 
 
-alert('✅ Bombeo guardado correctamente.');
+alert(
+'✅ Bombeo guardado correctamente.'
++
+(fotosSeleccionadas.length
+?' Fotos guardadas: '+fotosSeleccionadas.length
+:'')
+);
 
 document.getElementById('estado').textContent=
 'Conectado con Supabase';
-
-fotosNuevas=[];
 
 renderHistorial();
 
@@ -1403,13 +1358,11 @@ alert('❌ '+error.message);
 }
 
 
-/* ========================= */
 /* HISTORIAL */
-/* ========================= */
 
 async function renderHistorial(){
 
-const cont=
+let cont=
 document.getElementById('listaHistorial');
 
 cont.innerHTML='Cargando...';
@@ -1424,20 +1377,19 @@ SUPABASE_URL+
 {
 
 headers:{
-
 'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY
-
+'Authorization':'Bearer '+SUPABASE_KEY
 }
 
 }
 
 );
 
-if(!r.ok)
+if(!r.ok){
+
 throw new Error('HTTP '+r.status);
+
+}
 
 const datos=await r.json();
 
@@ -1450,7 +1402,65 @@ return;
 
 }
 
-cont.innerHTML=datos.map(x=>`
+
+/* CARGAR FOTOS DE TODOS LOS BOMBEOS */
+
+let fotosMap={};
+
+const rf=await fetch(
+
+SUPABASE_URL+
+'/rest/v1/fotos_bombeos?select=*',
+
+{
+
+headers:{
+'apikey':SUPABASE_KEY,
+'Authorization':'Bearer '+SUPABASE_KEY
+}
+
+}
+
+);
+
+if(rf.ok){
+
+const fotos=await rf.json();
+
+fotos.forEach(f=>{
+
+if(!fotosMap[f.bombeo_id]){
+fotosMap[f.bombeo_id]=[];
+}
+
+fotosMap[f.bombeo_id].push(f.url);
+
+});
+
+}
+
+
+cont.innerHTML=datos.map(x=>{
+
+const fotos=
+fotosMap[x.id]||[];
+
+const fotosHTML=
+fotos.length
+?
+
+`<div class="historial-fotos">
+${fotos.map(url=>`
+<a href="${esc(url)}" target="_blank">
+<img src="${esc(url)}" loading="lazy">
+</a>
+`).join('')}
+</div>`
+
+:'';
+
+
+return `
 
 <div class="record">
 
@@ -1463,36 +1473,22 @@ ${esc(x.fecha||'')}
 <br>
 
 <span class="muted">
+
 ${esc(x.ubicacion||'')}
+
 · tanque ${Number(x.tanque||0)} m³
+
 · cargó ${esc(x.operario||'')}
+
 </span>
 
-<br>
-
-<button
-class="primary"
-onclick="verBombeo(${x.id})">
-👁️ Ver
-</button>
-
-<button
-class="secondary"
-onclick="editarBombeo(${x.id})">
-✏️ Editar
-</button>
-
-<button
-class="danger"
-onclick="eliminarBombeo(${x.id})">
-🗑️ Eliminar
-</button>
-
-<div id="detalle-${x.id}" class="hidden"></div>
+${fotosHTML}
 
 </div>
 
-`).join('');
+`;
+
+}).join('');
 
 }
 
@@ -1500,421 +1496,6 @@ catch(e){
 
 cont.innerHTML=
 '❌ Error cargando historial: '+e.message;
-
-}
-
-}
-
-
-/* VER BOMBE0 */
-
-async function verBombeo(id){
-
-const div=
-document.getElementById('detalle-'+id);
-
-if(!div)return;
-
-if(!div.classList.contains('hidden')){
-
-div.classList.add('hidden');
-
-return;
-
-}
-
-div.classList.remove('hidden');
-
-div.innerHTML='Cargando detalle...';
-
-try{
-
-const rb=await fetch(
-
-SUPABASE_URL+
-'/rest/v1/bombas?select=*&bombeo_id=eq.'+id,
-
-{
-
-headers:{
-'apikey':SUPABASE_KEY,
-'Authorization':
-'Bearer '+SUPABASE_KEY
-}
-
-}
-
-);
-
-const rt=await fetch(
-
-SUPABASE_URL+
-'/rest/v1/tableros?select=*&bombeo_id=eq.'+id,
-
-{
-
-headers:{
-'apikey':SUPABASE_KEY,
-'Authorization':
-'Bearer '+SUPABASE_KEY
-}
-
-}
-
-);
-
-const rc=await fetch(
-
-SUPABASE_URL+
-'/rest/v1/consumos?select=*&bombeo_id=eq.'+id,
-
-{
-
-headers:{
-'apikey':SUPABASE_KEY,
-'Authorization':
-'Bearer '+SUPABASE_KEY
-}
-
-}
-
-);
-
-const rf=await fetch(
-
-SUPABASE_URL+
-'/rest/v1/fotos?select=*&bombeo_id=eq.'+id+'&order=id.desc',
-
-{
-
-headers:{
-'apikey':SUPABASE_KEY,
-'Authorization':
-'Bearer '+SUPABASE_KEY
-}
-
-}
-
-);
-
-const bombasData=await rb.json();
-const tableroData=await rt.json();
-const consumoData=await rc.json();
-const fotosData=await rf.json();
-
-let html='';
-
-html+=`<h3>🚰 Bombas</h3>`;
-
-if(bombasData.length){
-
-bombasData.forEach((b,i)=>{
-
-html+=`
-
-<div class="pump">
-
-<b>Bomba ${i+1}</b>
-
-<br>
-Marca/modelo: ${esc(b.marca||'-')}
-<br>
-Potencia: ${esc(b.potencia||'-')}
-<br>
-Corriente: ${esc(b.corriente||'-')}
-<br>
-Altura: ${esc(b.altura||'-')} m
-<br>
-Caudal: ${esc(b.caudal||'-')}
-<br>
-Horas/día: ${esc(b.horas||'-')}
-<br>
-Rodamientos: ${esc(b.rodamientos||'-')}
-<br>
-Último cambio: ${esc(b.fecha_rodamientos||'-')}
-<br>
-Impulsión: ${esc(b.diametro_impulsion||'-')}
-<br>
-Succión: ${esc(b.diametro_succion||'-')}
-
-</div>
-
-`;
-
-});
-
-}else{
-
-html+='Sin bombas.';
-
-}
-
-
-html+=`<h3>⚡ Tablero</h3>`;
-
-if(tableroData.length){
-
-const t=tableroData[0];
-
-html+=`
-
-<div class="record">
-
-Térmica: ${esc(t.termica||'-')}<br>
-Disyuntor: ${esc(t.disyuntor||'-')}<br>
-Guardamotor: ${esc(t.guardamotor||'-')}<br>
-Contactor: ${esc(t.contactor||'-')}<br>
-Variador: ${esc(t.variador||'-')}<br>
-Temporizador: ${esc(t.temporizador||'-')}<br>
-Otros: ${esc(t.otros||'-')}
-
-</div>
-
-`;
-
-}
-
-
-html+=`<h3>📈 Consumo</h3>`;
-
-if(consumoData.length){
-
-consumoData.forEach(c=>{
-
-html+=`
-
-<div class="record">
-
-Fecha: ${esc(c.fecha||'-')}<br>
-Horas: ${Number(c.horas||0)} h/día<br>
-Potencia: ${Number(c.potencia||0)} kW<br>
-Consumo: ${Number(c.kwh||0).toFixed(2)} kWh/día
-
-</div>
-
-`;
-
-});
-
-}
-
-
-html+=`<h3>📷 Fotos</h3>`;
-
-if(fotosData.length){
-
-html+=`<div class="photo-grid">`;
-
-fotosData.forEach(f=>{
-
-html+=`
-
-<div class="photo-card">
-
-<img
-src="${esc(f.url)}"
-onclick="abrirFoto('${esc(f.url)}')">
-
-<button
-class="photo-delete"
-onclick="eliminarFoto(${f.id},'${esc(f.url)}',${id})">
-✕
-</button>
-
-</div>
-
-`;
-
-});
-
-html+=`</div>`;
-
-}else{
-
-html+=`
-<p class="muted">
-No hay fotos cargadas.
-</p>
-`;
-
-}
-
-
-div.innerHTML=html;
-
-}
-
-catch(e){
-
-div.innerHTML=
-'❌ Error cargando detalle: '+e.message;
-
-}
-
-}
-
-
-/* ELIMINAR FOTO */
-
-async function eliminarFoto(fotoId,url,bombeoId){
-
-if(!confirm('¿Eliminar esta foto?'))
-return;
-
-try{
-
-const partes=url.split('/storage/v1/object/public/'+BUCKET+'/');
-
-if(partes.length<2)
-throw new Error('URL de foto inválida.');
-
-const path=decodeURIComponent(partes[1]);
-
-const delStorage=await fetch(
-
-SUPABASE_URL+
-'/storage/v1/object/'+
-BUCKET,
-
-{
-
-method:'DELETE',
-
-headers:{
-
-'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY,
-
-'Content-Type':
-'application/json'
-
-},
-
-body:JSON.stringify({
-prefixes:[path]
-})
-
-}
-
-);
-
-if(!delStorage.ok){
-
-console.warn(
-'No se pudo borrar archivo del Storage.'
-);
-
-}
-
-
-const delDb=await fetch(
-
-SUPABASE_URL+
-'/rest/v1/fotos?id=eq.'+
-fotoId,
-
-{
-
-method:'DELETE',
-
-headers:{
-
-'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY
-
-}
-
-}
-
-);
-
-if(!delDb.ok){
-
-throw new Error(
-'No se pudo eliminar el registro.'
-);
-
-}
-
-await verBombeo(bombeoId);
-
-await verBombeo(bombeoId);
-
-}
-
-catch(e){
-
-alert('❌ '+e.message);
-
-}
-
-}
-
-
-/* EDITAR */
-
-function editarBombeo(id){
-
-alert(
-'La edición completa del relevamiento se mantiene disponible en tu versión actual. Las fotos se pueden agregar desde el detalle del bombeo.'
-);
-
-}
-
-
-/* ELIMINAR BOMBE0 */
-
-async function eliminarBombeo(id){
-
-if(!confirm(
-'¿Seguro que querés eliminar este relevamiento?'
-))return;
-
-try{
-
-const r=await fetch(
-
-SUPABASE_URL+
-'/rest/v1/bombeos?id=eq.'+
-id,
-
-{
-
-method:'DELETE',
-
-headers:{
-
-'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY
-
-}
-
-}
-
-);
-
-if(!r.ok)
-throw new Error('HTTP '+r.status);
-
-alert('✅ Bombeo eliminado.');
-
-renderHistorial();
-
-renderConsumo();
-
-}
-
-catch(e){
-
-alert(
-'❌ No se pudo eliminar: '+e.message
-);
 
 }
 
@@ -1935,20 +1516,19 @@ SUPABASE_URL+
 {
 
 headers:{
-
 'apikey':SUPABASE_KEY,
-
-'Authorization':
-'Bearer '+SUPABASE_KEY
-
+'Authorization':'Bearer '+SUPABASE_KEY
 }
 
 }
 
 );
 
-if(!r.ok)
+if(!r.ok){
+
 throw new Error('HTTP '+r.status);
+
+}
 
 const datos=await r.json();
 
@@ -1984,8 +1564,11 @@ document.getElementById('cMax').textContent=
 max.toFixed(2);
 
 document.getElementById('detalleConsumo').innerHTML=
+
 datos.length
+
 ?
+
 datos.map(x=>`
 
 <div class="record">
@@ -2005,7 +1588,9 @@ ${esc(x.fecha||'')}
 </div>
 
 `).join('')
+
 :
+
 'Sin datos de consumo.';
 
 }
@@ -2051,45 +1636,21 @@ document.getElementById('potenciaPromedio').value='';
 
 document.getElementById('consumoDiario').value='';
 
-document.getElementById('fecha').valueAsDate=
-new Date();
+document.getElementById('fecha').valueAsDate=new Date();
 
-document.getElementById('fechaConsumo').valueAsDate=
-new Date();
+document.getElementById('fechaConsumo').valueAsDate=new Date();
+
+document.getElementById('fotos').value='';
+
+document.getElementById('fotosPreview').innerHTML='';
+
+fotosSeleccionadas=[];
 
 document.getElementById('bombas').innerHTML='';
 
-document.getElementById('fotosNuevas').innerHTML='';
-
 bombas=[];
 
-fotosNuevas=[];
-
 agregarBomba();
-
-}
-
-
-/* ABRIR FOTO */
-
-function abrirFoto(url){
-
-document.getElementById('fotoGrande').src=url;
-
-document.getElementById('modalFoto')
-.classList.remove('hidden');
-
-}
-
-
-/* CERRAR FOTO */
-
-function cerrarFoto(){
-
-document.getElementById('modalFoto')
-.classList.add('hidden');
-
-document.getElementById('fotoGrande').src='';
 
 }
 
@@ -2098,8 +1659,7 @@ document.getElementById('fotoGrande').src='';
 
 window.onload=()=>{
 
-let op=
-localStorage.getItem('operario');
+let op=localStorage.getItem('operario');
 
 if(op){
 
