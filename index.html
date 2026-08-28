@@ -245,8 +245,6 @@ button{
 
 <main class="wrap">
 
-<!-- LOGIN -->
-
 <section id="login" class="card">
 
 <h2>Iniciar sesión</h2>
@@ -267,8 +265,6 @@ Ingresar
 
 </section>
 
-
-<!-- APP -->
 
 <section id="app" class="hidden">
 
@@ -304,8 +300,6 @@ Consumo
 
 </div>
 
-
-<!-- NUEVO -->
 
 <section id="nuevo">
 
@@ -372,8 +366,6 @@ Consumo
 </div>
 
 
-<!-- FOTOS -->
-
 <div class="card">
 
 <h2>📸 Fotos del bombeo</h2>
@@ -383,21 +375,19 @@ Podés sacar fotos directamente con el celular o seleccionarlas desde la galerí
 </p>
 
 <input
-  id="fotos"
-  class="foto-input"
-  type="file"
-  accept="image/*"
-  capture="environment"
-  multiple
-  onchange="previsualizarFotos()"
+id="fotos"
+class="foto-input"
+type="file"
+accept="image/*"
+capture="environment"
+multiple
+onchange="previsualizarFotos()"
 >
 
 <div id="fotosPreview" class="fotos-preview"></div>
 
 </div>
 
-
-<!-- BOMBAS -->
 
 <div class="card">
 
@@ -412,8 +402,6 @@ Podés sacar fotos directamente con el celular o seleccionarlas desde la galerí
 </div>
 
 
-<!-- TABLERO -->
-
 <div class="card">
 
 <h2>⚡ Tablero y protecciones</h2>
@@ -421,51 +409,33 @@ Podés sacar fotos directamente con el celular o seleccionarlas desde la galerí
 <div class="row">
 
 <div>
-
 <label>Térmica</label>
-
 <input id="termica" placeholder="Ej.: 80 A curva C">
-
 </div>
 
 <div>
-
 <label>Disyuntor diferencial</label>
-
 <input id="disyuntor" placeholder="Ej.: 80 A - 300 mA">
-
 </div>
 
 <div>
-
 <label>Guardamotor</label>
-
 <input id="guardamotor">
-
 </div>
 
 <div>
-
 <label>Contactor</label>
-
 <input id="contactor">
-
 </div>
 
 <div>
-
 <label>Variador</label>
-
 <input id="variador">
-
 </div>
 
 <div>
-
 <label>Temporizador</label>
-
 <input id="temporizador">
-
 </div>
 
 </div>
@@ -476,8 +446,6 @@ Podés sacar fotos directamente con el celular o seleccionarlas desde la galerí
 
 </div>
 
-
-<!-- CONSUMO -->
 
 <div class="card">
 
@@ -542,8 +510,6 @@ Limpiar
 </section>
 
 
-<!-- HISTORIAL -->
-
 <section id="historial" class="hidden">
 
 <div class="card">
@@ -558,8 +524,6 @@ Cargando...
 
 </section>
 
-
-<!-- CONSUMO -->
 
 <section id="consumo" class="hidden">
 
@@ -612,7 +576,16 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 'sb_publishable_1vPC56eOZLGxlwlYWTA9bg_arXeNv1Z';
 
-const STORAGE_BUCKET = 'fotos';
+
+/*
+========================================
+IMPORTANTE
+========================================
+El bucket de Supabase se llama:
+fotos-bombeo
+*/
+
+const STORAGE_BUCKET = 'fotos-bombeo';
 
 let bombas=[];
 let fotosSeleccionadas=[];
@@ -622,14 +595,11 @@ let fotosSeleccionadas=[];
 
 function entrar(){
 
-let op=document.getElementById('operario').value;
+const op=document.getElementById('operario').value;
 
 if(!op){
-
 alert('Seleccioná un operario.');
-
 return;
-
 }
 
 localStorage.setItem('operario',op);
@@ -690,11 +660,11 @@ renderConsumo();
 
 function agregarBomba(data={}){
 
-let i=bombas.length;
+const i=bombas.length;
 
 bombas.push(data);
 
-let d=document.createElement('div');
+const d=document.createElement('div');
 
 d.className='pump';
 
@@ -807,7 +777,7 @@ renderBombas();
 
 function renderBombas(){
 
-let old=[...bombas];
+const old=[...bombas];
 
 document.getElementById('bombas').innerHTML='';
 
@@ -822,12 +792,12 @@ old.forEach(x=>agregarBomba(x));
 
 function recogerBombas(){
 
-let out=[];
+const out=[];
 
 document.querySelectorAll('.pump')
-.forEach((p)=>{
+.forEach(p=>{
 
-let x={};
+const x={};
 
 p.querySelectorAll('[data-f]')
 .forEach(e=>{
@@ -865,7 +835,7 @@ function previsualizarFotos(){
 
 const input=document.getElementById('fotos');
 
-fotosSeleccionadas=Array.from(input.files);
+fotosSeleccionadas=Array.from(input.files || []);
 
 const cont=document.getElementById('fotosPreview');
 
@@ -885,7 +855,7 @@ div.innerHTML=`
 
 <img src="${e.target.result}">
 
-<button onclick="quitarFoto(${index})">
+<button type="button" onclick="quitarFoto(${index})">
 ✕
 </button>
 
@@ -912,7 +882,9 @@ const input=document.getElementById('fotos');
 
 const dt=new DataTransfer();
 
-fotosSeleccionadas.forEach(file=>dt.items.add(file));
+fotosSeleccionadas.forEach(file=>{
+dt.items.add(file);
+});
 
 input.files=dt.files;
 
@@ -929,7 +901,7 @@ if(!fotosSeleccionadas.length){
 return [];
 }
 
-let urls=[];
+const urls=[];
 
 for(let i=0;i<fotosSeleccionadas.length;i++){
 
@@ -942,7 +914,7 @@ const nombreArchivo=
 bombeoId+'/'+Date.now()+'_'+i+'.'+extension;
 
 
-/* SUBIR AL STORAGE */
+/* STORAGE */
 
 const upload=await fetch(
 
@@ -973,7 +945,12 @@ if(!upload.ok){
 const texto=await upload.text();
 
 throw new Error(
-'Error subiendo foto: '+texto
+'Error subiendo foto al bucket "'+
+STORAGE_BUCKET+
+'": HTTP '+
+upload.status+
+' - '+
+texto
 );
 
 }
@@ -988,14 +965,12 @@ STORAGE_BUCKET+'/'+
 nombreArchivo;
 
 urls.push({
-
 archivo:nombreArchivo,
 url:url
-
 });
 
 
-/* GUARDAR REGISTRO */
+/* REGISTRO EN TABLA */
 
 const registro=await fetch(
 
@@ -1009,7 +984,8 @@ method:'POST',
 headers:{
 'apikey':SUPABASE_KEY,
 'Authorization':'Bearer '+SUPABASE_KEY,
-'Content-Type':'application/json'
+'Content-Type':'application/json',
+'Prefer':'return=minimal'
 },
 
 body:JSON.stringify({
@@ -1029,7 +1005,10 @@ if(!registro.ok){
 const texto=await registro.text();
 
 throw new Error(
-'La foto se subió pero no se pudo guardar su registro: '+texto
+'La foto se subió al Storage, pero falló el registro en fotos_bombeos: HTTP '+
+registro.status+
+' - '+
+texto
 );
 
 }
@@ -1045,7 +1024,7 @@ return urls;
 
 async function guardar(){
 
-let nombre=
+const nombre=
 document.getElementById('nombre').value;
 
 if(!nombre){
@@ -1077,7 +1056,7 @@ consumo.toFixed(2);
 }
 
 
-let datos={
+const datos={
 
 nombre:nombre,
 
@@ -1135,14 +1114,24 @@ if(!r.ok){
 const texto=await r.text();
 
 throw new Error(
-'Error guardando bombeo: HTTP '+r.status+
-' '+texto
+'Error guardando bombeo: HTTP '+
+r.status+
+' - '+
+texto
 );
 
 }
 
 
 const bombeo=await r.json();
+
+if(!bombeo || !bombeo.length || !bombeo[0].id){
+
+throw new Error(
+'Supabase guardó el bombeo pero no devolvió su ID.'
+);
+
+}
 
 const bombeoId=bombeo[0].id;
 
@@ -1152,6 +1141,35 @@ const bombeoId=bombeo[0].id;
 const listaBombas=recogerBombas();
 
 for(const b of listaBombas){
+
+const datosBomba={
+
+bombeo_id:bombeoId,
+
+marca:b.marca || null,
+
+potencia:b.potencia || null,
+
+corriente:b.corriente || null,
+
+altura:b.altura || null,
+
+caudal:b.caudal || null,
+
+horas:b.horas || null,
+
+rodamientos:b.rodamientos || null,
+
+fecha_rodamientos:b.fechaRod || null,
+
+diametro_impulsion:b.impulsion || null,
+
+diametro_succion:b.succion || null,
+
+observaciones:b.obs || null
+
+};
+
 
 const rb=await fetch(
 
@@ -1165,45 +1183,28 @@ method:'POST',
 headers:{
 'apikey':SUPABASE_KEY,
 'Authorization':'Bearer '+SUPABASE_KEY,
-'Content-Type':'application/json'
+'Content-Type':'application/json',
+'Prefer':'return=minimal'
 },
 
-body:JSON.stringify({
-
-bombeo_id:bombeoId,
-
-marca:b.marca||null,
-
-potencia:b.potencia||null,
-
-corriente:b.corriente||null,
-
-altura:b.altura||null,
-
-caudal:b.caudal||null,
-
-horas:b.horas||null,
-
-rodamientos:b.rodamientos||null,
-
-fecha_rodamientos:b.fechaRod||null,
-
-diametro_impulsion:b.impulsion||null,
-
-diametro_succion:b.succion||null,
-
-observaciones:b.obs||null
-
-})
+body:JSON.stringify(datosBomba)
 
 }
 
 );
 
+
 if(!rb.ok){
 
+const texto=await rb.text();
+
 throw new Error(
-'Error guardando una bomba: HTTP '+rb.status
+
+'❌ Error guardando una bomba.\n\n'+
+'HTTP: '+rb.status+
+'\n\nRespuesta de Supabase:\n'+
+texto
+
 );
 
 }
@@ -1212,6 +1213,34 @@ throw new Error(
 
 
 /* TABLERO */
+
+const datosTablero={
+
+bombeo_id:bombeoId,
+
+termica:
+document.getElementById('termica').value || null,
+
+disyuntor:
+document.getElementById('disyuntor').value || null,
+
+guardamotor:
+document.getElementById('guardamotor').value || null,
+
+contactor:
+document.getElementById('contactor').value || null,
+
+variador:
+document.getElementById('variador').value || null,
+
+temporizador:
+document.getElementById('temporizador').value || null,
+
+otros:
+document.getElementById('otrosTablero').value || null
+
+};
+
 
 const rt=await fetch(
 
@@ -1225,50 +1254,48 @@ method:'POST',
 headers:{
 'apikey':SUPABASE_KEY,
 'Authorization':'Bearer '+SUPABASE_KEY,
-'Content-Type':'application/json'
+'Content-Type':'application/json',
+'Prefer':'return=minimal'
 },
 
-body:JSON.stringify({
-
-bombeo_id:bombeoId,
-
-termica:
-document.getElementById('termica').value,
-
-disyuntor:
-document.getElementById('disyuntor').value,
-
-guardamotor:
-document.getElementById('guardamotor').value,
-
-contactor:
-document.getElementById('contactor').value,
-
-variador:
-document.getElementById('variador').value,
-
-temporizador:
-document.getElementById('temporizador').value,
-
-otros:
-document.getElementById('otrosTablero').value
-
-})
+body:JSON.stringify(datosTablero)
 
 }
 
 );
 
+
 if(!rt.ok){
 
+const texto=await rt.text();
+
 throw new Error(
-'Error guardando tablero: HTTP '+rt.status
+'Error guardando tablero: HTTP '+
+rt.status+
+' - '+
+texto
 );
 
 }
 
 
 /* CONSUMO */
+
+const datosConsumo={
+
+bombeo_id:bombeoId,
+
+horas:horas,
+
+potencia:potencia,
+
+kwh:consumo,
+
+fecha:
+document.getElementById('fechaConsumo').value || null
+
+};
+
 
 const rc=await fetch(
 
@@ -1282,32 +1309,26 @@ method:'POST',
 headers:{
 'apikey':SUPABASE_KEY,
 'Authorization':'Bearer '+SUPABASE_KEY,
-'Content-Type':'application/json'
+'Content-Type':'application/json',
+'Prefer':'return=minimal'
 },
 
-body:JSON.stringify({
-
-bombeo_id:bombeoId,
-
-horas:horas,
-
-potencia:potencia,
-
-kwh:consumo,
-
-fecha:
-document.getElementById('fechaConsumo').value
-
-})
+body:JSON.stringify(datosConsumo)
 
 }
 
 );
 
+
 if(!rc.ok){
 
+const texto=await rc.text();
+
 throw new Error(
-'Error guardando consumo: HTTP '+rc.status
+'Error guardando consumo: HTTP '+
+rc.status+
+' - '+
+texto
 );
 
 }
@@ -1315,10 +1336,14 @@ throw new Error(
 
 /* FOTOS */
 
+let cantidadFotos=0;
+
 if(fotosSeleccionadas.length){
 
+cantidadFotos=fotosSeleccionadas.length;
+
 document.getElementById('estado').textContent=
-'Subiendo fotos...';
+'Subiendo '+cantidadFotos+' foto(s)...';
 
 await subirFotos(bombeoId);
 
@@ -1328,9 +1353,11 @@ await subirFotos(bombeoId);
 alert(
 '✅ Bombeo guardado correctamente.'
 +
-(fotosSeleccionadas.length
-?' Fotos guardadas: '+fotosSeleccionadas.length
-:'')
+(cantidadFotos
+?
+'\n📸 Fotos guardadas: '+cantidadFotos
+:
+'')
 );
 
 document.getElementById('estado').textContent=
@@ -1362,7 +1389,7 @@ alert('❌ '+error.message);
 
 async function renderHistorial(){
 
-let cont=
+const cont=
 document.getElementById('listaHistorial');
 
 cont.innerHTML='Cargando...';
@@ -1387,7 +1414,11 @@ headers:{
 
 if(!r.ok){
 
-throw new Error('HTTP '+r.status);
+const texto=await r.text();
+
+throw new Error(
+'HTTP '+r.status+' - '+texto
+);
 
 }
 
@@ -1403,7 +1434,7 @@ return;
 }
 
 
-/* CARGAR FOTOS DE TODOS LOS BOMBEOS */
+/* FOTOS */
 
 let fotosMap={};
 
@@ -1433,7 +1464,9 @@ if(!fotosMap[f.bombeo_id]){
 fotosMap[f.bombeo_id]=[];
 }
 
+if(f.url){
 fotosMap[f.bombeo_id].push(f.url);
+}
 
 });
 
@@ -1451,9 +1484,16 @@ fotos.length
 
 `<div class="historial-fotos">
 ${fotos.map(url=>`
+
 <a href="${esc(url)}" target="_blank">
-<img src="${esc(url)}" loading="lazy">
+
+<img
+src="${esc(url)}"
+loading="lazy"
+>
+
 </a>
+
 `).join('')}
 </div>`
 
@@ -1532,19 +1572,19 @@ throw new Error('HTTP '+r.status);
 
 const datos=await r.json();
 
-let valores=
+const valores=
 datos
 .map(x=>Number(x.kwh||0))
 .filter(x=>x>0);
 
-let promedio=
+const promedio=
 valores.length
 ?
 valores.reduce((a,b)=>a+b,0)/valores.length
 :
 0;
 
-let max=
+const max=
 valores.length
 ?
 Math.max(...valores)
@@ -1659,7 +1699,7 @@ agregarBomba();
 
 window.onload=()=>{
 
-let op=localStorage.getItem('operario');
+const op=localStorage.getItem('operario');
 
 if(op){
 
